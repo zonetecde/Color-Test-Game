@@ -1,12 +1,12 @@
 import React from 'react';
 import {Pressable, Text, View} from 'react-native';
 import {Color, getRandomColor, getRandomPropositions} from '../Colors';
+import Sound from 'react-native-sound';
 
 const Game = (props: {
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [score, setScore] = React.useState(0);
-  const [time, setTime] = React.useState(0);
   const [color, setColor] = React.useState<Color>({
     name: '',
     hexCode: '',
@@ -18,6 +18,9 @@ const Game = (props: {
   const [isGameOver, setIsGameOver] = React.useState(false);
 
   React.useEffect(() => {
+    if (startCountdown === 3) {
+      playSound('countdown.wav', 0.1);
+    }
     if (startCountdown > 0) {
       setTimeout(() => {
         setStartCountdown(startCountdown - 1);
@@ -26,6 +29,17 @@ const Game = (props: {
       setRandomColor();
     }
   }, [startCountdown]);
+
+  async function playSound(songName: string, volume: number = 0.5) {
+    var whoosh = new Sound(songName, Sound.MAIN_BUNDLE, error => {
+      if (error) {
+        console.log('failed to load the sound', error);
+        return;
+      }
+      whoosh.setVolume(volume);
+      whoosh.play();
+    });
+  }
 
   function setRandomColor() {
     const randomColor = getRandomColor(color);
@@ -57,13 +71,16 @@ const Game = (props: {
             {propositions.map((proposition, index) => {
               function handlePressColor(proposition: Color): void {
                 // Vérifier si la couleur est bonne
-                console.log(proposition, color);
                 if (proposition.hexCode === color.hexCode) {
                   setScore(score + 1);
                   setRandomColor();
+
+                  playSound('correct.wav');
                 } else {
                   // Game Over
                   setIsGameOver(true);
+
+                  playSound('wrong.wav');
                 }
               }
 

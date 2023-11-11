@@ -22,16 +22,16 @@ export class Color {
 }
 
 const colors = [
-  new Color('#FF0000', 'rouge', '#00FFFF'),
-  new Color('#008000', 'vert', '#fc2377'),
+  new Color('#ff0008', 'rouge', '#00FFFF'),
+  new Color('#008000', 'vert', '#f5c1d5'),
   new Color('#0000FF', 'bleu', '#eda1b9'),
   new Color('#FFFF00', 'jaune', '#0000FF'),
   new Color('#840bb0', 'violet', '#edd81a'),
-  new Color('#FFC0CB', 'rose', '#143d1c'),
+  new Color('#ff8cc8', 'rose', '#143d1c'),
   new Color('#FFA500', 'orange', '#005AFF'),
   new Color('#000000', 'noir', '#FFFFFF'),
   new Color('#FFFFFF', 'blanc', '#000000'),
-  new Color('#A52A2A', 'marron', '#5AD5D5'),
+  new Color('#A52A2A', 'brun', '#964b00'),
   new Color('#808080', 'gris', '#ffffff'),
 ];
 
