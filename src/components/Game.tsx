@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Pressable, Text, View} from 'react-native';
 import {Color, getRandomColor, getRandomPropositions} from '../Colors';
 import Sound from 'react-native-sound';
@@ -7,6 +7,7 @@ const Game = (props: {
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [score, setScore] = React.useState(0);
+  const [timer, setTimer] = React.useState(3);
   const [color, setColor] = React.useState<Color>({
     name: '',
     hexCode: '',
@@ -17,7 +18,7 @@ const Game = (props: {
   const [textRandomColor, setTextRandomColor] = React.useState<Color>();
   const [isGameOver, setIsGameOver] = React.useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (startCountdown === 3) {
       playSound('countdown.wav', 0.1);
     }
@@ -27,8 +28,24 @@ const Game = (props: {
       }, 1000);
     } else {
       setRandomColor();
+
+      setTimer(3);
     }
   }, [startCountdown]);
+
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (startCountdown === 0 && !isGameOver) {
+      if (timer > 0) {
+        timerRef.current = setTimeout(() => {
+          setTimer(timer - 1);
+        }, 1000);
+      } else {
+        setIsGameOver(true);
+      }
+    }
+  }, [timer]);
 
   async function playSound(songName: string, volume: number = 0.5) {
     var whoosh = new Sound(songName, Sound.MAIN_BUNDLE, error => {
@@ -53,6 +70,7 @@ const Game = (props: {
         .sort(() => Math.random() - 0.5)[0],
     );
   }
+
   function handlePlayAgainPressed(): void {
     setIsGameOver(false);
     setStartCountdown(3);
@@ -66,6 +84,9 @@ const Game = (props: {
           <Text className="absolute translate-x-1/2 top-20 bg-sky-200 pl-7 pr-6 pt-4 pb-2.5 border-2 rounded-xl text-2xl text-black">
             Score : {score}
           </Text>
+          <Text className="absolute  translate-x-1/2 top-7 bg-white pl-2.5 pr-2 pt-2 pb-1 border-2 rounded-lg text-lg text-black">
+            Temps : {timer}
+          </Text>
 
           <View className="flex flex-row gap-3 w-full flex-wrap items-center justify-center mt-10">
             {propositions.map((proposition, index) => {
@@ -74,6 +95,11 @@ const Game = (props: {
                 if (proposition.hexCode === color.hexCode) {
                   setScore(score + 1);
                   setRandomColor();
+                  // Empêche l'ancien timer de se déclencher
+                  if (timerRef.current) {
+                    clearTimeout(timerRef.current);
+                  }
+                  setTimer(3);
 
                   playSound('correct.wav');
                 } else {

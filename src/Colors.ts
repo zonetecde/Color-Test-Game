@@ -31,7 +31,7 @@ const colors = [
   new Color('#FFA500', 'orange', '#005AFF'),
   new Color('#000000', 'noir', '#FFFFFF'),
   new Color('#FFFFFF', 'blanc', '#000000'),
-  new Color('#A52A2A', 'brun', '#964b00'),
+  new Color('#A52A2A', 'brun', '#93c4f5'),
   new Color('#808080', 'gris', '#ffffff'),
 ];
 
