@@ -6,47 +6,70 @@ import Sound from 'react-native-sound';
 const Game = (props: {
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  // Le score du joueur
   const [score, setScore] = React.useState(0);
+  // Le timer pour répondre
   const [timer, setTimer] = React.useState(3);
+  // La couleur à trouver
   const [color, setColor] = React.useState<Color>({
     name: '',
     hexCode: '',
     invertHex: '',
   });
+  // Les propositions de couleurs
   const [propositions, setPropositions] = React.useState<Color[]>([]);
+  // Le compte à rebours avant le début de la partie
   const [startCountdown, setStartCountdown] = React.useState(3);
+  // La couleur du texte
   const [textRandomColor, setTextRandomColor] = React.useState<Color>();
+  // Si la partie est terminée
   const [isGameOver, setIsGameOver] = React.useState(false);
 
+  /**
+   * Gère le compte à rebours avant le début de la partie
+   */
   useEffect(() => {
+    // Joue le son
     if (startCountdown === 3) {
       playSound('countdown.wav', 0.1);
     }
+
     if (startCountdown > 0) {
       setTimeout(() => {
         setStartCountdown(startCountdown - 1);
       }, 1000);
     } else {
+      // Le jeu commence
       setRandomColor();
-
       setTimer(3);
     }
   }, [startCountdown]);
 
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
+  /**
+   * Gère le timer : max 3 secondes pour répondre
+   */
   useEffect(() => {
+    // Si en jeu
     if (startCountdown === 0 && !isGameOver) {
       if (timer > 0) {
+        // Utilise un ref pour pouvoir l'annuler
         timerRef.current = setTimeout(() => {
           setTimer(timer - 1);
         }, 1000);
       } else {
+        // Game Over après 3 secondes
         setIsGameOver(true);
       }
     }
   }, [timer]);
 
+  /**
+   * Joue un son
+   * @param songName Nom du son
+   * @param volume Volume du son
+   */
   async function playSound(songName: string, volume: number = 0.5) {
     var whoosh = new Sound(songName, Sound.MAIN_BUNDLE, error => {
       if (error) {
@@ -58,12 +81,18 @@ const Game = (props: {
     });
   }
 
+  /**
+   * Génère une couleur aléatoire et ses propositions
+   */
   function setRandomColor() {
+    // Générer une couleur aléatoire
     const randomColor = getRandomColor(color);
+    // Générer les propositions
     const _propositions = getRandomPropositions(randomColor, propositions);
     setColor(randomColor);
     setPropositions(_propositions);
 
+    // Générer la couleur du texte
     setTextRandomColor(
       _propositions
         .filter(x => x.hexCode !== randomColor.hexCode)
@@ -71,6 +100,9 @@ const Game = (props: {
     );
   }
 
+  /**
+   * Gère le clique sur le bouton rejouer
+   */
   function handlePlayAgainPressed(): void {
     setIsGameOver(false);
     setStartCountdown(3);
@@ -90,6 +122,10 @@ const Game = (props: {
 
           <View className="flex flex-row gap-3 w-full flex-wrap items-center justify-center mt-10">
             {propositions.map((proposition, index) => {
+              /**
+               * Gère le clique sur une proposition de couleur
+               * @param proposition La proposition de couleur
+               */
               function handlePressColor(proposition: Color): void {
                 // Vérifier si la couleur est bonne
                 if (proposition.hexCode === color.hexCode) {
