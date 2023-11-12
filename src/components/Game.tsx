@@ -9,7 +9,7 @@ const Game = (props: {
   // Le score du joueur
   const [score, setScore] = React.useState(0);
   // Le timer pour répondre
-  const [timer, setTimer] = React.useState(3);
+  const [timer, setTimer] = React.useState(-1);
   // La couleur à trouver
   const [color, setColor] = React.useState<Color>({
     name: '',
@@ -60,7 +60,7 @@ const Game = (props: {
         }, 1000);
       } else {
         // Game Over après 3 secondes
-        setIsGameOver(true);
+        gameOver();
       }
     }
   }, [timer]);
@@ -109,6 +109,11 @@ const Game = (props: {
     setScore(0);
   }
 
+  function gameOver() {
+    setIsGameOver(true);
+    playSound('gameover.wav');
+  }
+
   return (
     <>
       {startCountdown === 0 && color && textRandomColor ? (
@@ -140,7 +145,7 @@ const Game = (props: {
                   playSound('correct.wav');
                 } else {
                   // Game Over
-                  setIsGameOver(true);
+                  gameOver();
 
                   playSound('wrong.wav');
                 }
